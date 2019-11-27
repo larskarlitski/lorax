@@ -1,5 +1,6 @@
 #!/usr/bin/python3
-
+import os
+import unittest
 import tempfile
 
 import composertest
@@ -53,6 +54,7 @@ class TestQcow2(composertest.ComposerTestCase):
             self.runImageTest("/tests/cli/test_boot_qcow2.sh")
 
 
+@unittest.skipUnless(os.getenv("BACKEND") == "lorax-composer", "requires lorax-composer")
 class TestLiveIso(composertest.ComposerTestCase):
     def tearDown(self):
         super().tearDownTestMachine()
