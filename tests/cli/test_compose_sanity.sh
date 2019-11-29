@@ -11,14 +11,27 @@ CLI="${CLI:-./src/bin/composer-cli}"
 
 rlJournalStart
     rlPhaseStartTest "compose types"
-        if [ "$(uname -m)" = "x86_64" ]; then
-            rlAssertEquals "lists all supported types" \
-                    "`$CLI compose types | xargs`" "alibaba ami ext4-filesystem google live-iso openstack partitioned-disk qcow2 tar vhd vmdk"
-        else
-            # non-x86 architectures disable alibaba
-            rlAssertEquals "lists all supported types" \
-                    "`$CLI compose types | xargs`" "ext4-filesystem live-iso openstack partitioned-disk qcow2 tar"
+        TYPE_LIVE_ISO="live-iso"
+        TYPE_ALIBABA="alibaba"
+        TYPE_GOOGLE="google"
+
+        # backend specific compose type overrides
+        if [ "$BACKEND" == "osbuild-composer" ]; then
+            TYPE_LIVE_ISO=""
+            TYPE_ALIBABA=""
+            TYPE_GOOGLE=""
         fi
+
+        # arch specific compose type selections
+        if [ "$(uname -m)" = "x86_64" ]; then
+            SUPPORTED_TYPES="$TYPE_ALIBABA ami ext4-filesystem $TYPE_GOOGLE $TYPE_LIVE_ISO openstack partitioned-disk qcow2 tar vhd vmdk"
+        else
+            SUPPORTED_TYPES="ext4-filesystem $TYPE_LIVE_ISO openstack partitioned-disk qcow2 tar"
+        fi
+
+        # truncate white space in case some types are not available
+        SUPPORTED_TYPES=$(echo "$SUPPORTED_TYPES" | tr -s ' ' | sed 's/^[[:space:]]*//')
+        rlAssertEquals "lists all supported types" "`$CLI compose types | xargs`" "$SUPPORTED_TYPES"
     rlPhaseEnd
 
     rlPhaseStartTest "compose start"
