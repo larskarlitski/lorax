@@ -57,7 +57,9 @@ rlJournalStart
 
             rlRun -t -c "$CLI compose image $UUID"
             rlAssertExists "$UUID-root.tar.xz"
+        fi
 
+        if [ "$BACKEND" != "osbuild-composer" ]; then
             # because this path is listed in the documentation
             rlAssertExists    "/var/lib/lorax/composer/results/$UUID/"
             rlAssertExists    "/var/lib/lorax/composer/results/$UUID/root.tar.xz"

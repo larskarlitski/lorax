@@ -69,6 +69,8 @@ __EOF__
 
     rlPhaseStartTest "compose finished"
         wait_for_compose "$UUID"
+        rlRun -t -c "$CLI compose image $UUID"
+        rlRun -t -c "mv $UUID-root.tar.xz $TMP_DIR"
     rlPhaseEnd
 
     rlPhaseStartTest "Install tar image using kickstart liveimg command"
@@ -88,7 +90,7 @@ autopart
 # (using 'poweroff' ks command just halted the machine without powering it off)
 reboot
 
-liveimg --url file:///var/lib/lorax/composer/results/$UUID/root.tar.xz
+liveimg --url file://$TMP_DIR/$UUID-root.tar.xz
 
 __EOF__
         # Build the disk image directly in the results directory

@@ -61,9 +61,10 @@ __EOF__
         wait_for_compose "$UUID"
 
         # Save the results for boot test
-        rlAssertExists "/var/lib/lorax/composer/results/$UUID/disk.qcow2"
+        rlRun -t -c "$CLI compose image $UUID"
+        rlAssertExists "$UUID-disk.qcow2"
         rlRun -t -c "mkdir -p /var/tmp/test-results/"
-        rlRun -t -c "cp /var/lib/lorax/composer/results/$UUID/disk.qcow2 /var/tmp/test-results/"
+        rlRun -t -c "mv $UUID-disk.qcow2 /var/tmp/test-results/disk.qcow2"
         # Include the ssh key needed to log into the image
         rlRun -t -c "cp $SSH_KEY_DIR/* /var/tmp/test-results"
     rlPhaseEnd
