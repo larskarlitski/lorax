@@ -15,6 +15,13 @@ set -e
 CLI="${CLI:-./src/bin/composer-cli}"
 
 rlJournalStart
+    rlPhaseStartSetup
+        if [ "$BACKEND" == "osbuild-composer" ] && [ -z "$($CLI sources list | grep beakerlib-client)" ]; then
+            rlAssertExists "/root/beakerlib-client-repo.toml"
+            rlRun -t -c "$CLI sources add /root/beakerlib-client-repo.toml"
+        fi
+    rlPhaseEnd
+
     rlPhaseStartTest "compose start"
         rlAssertEquals "SELinux operates in enforcing mode" "$(getenforce)" "Enforcing"
 

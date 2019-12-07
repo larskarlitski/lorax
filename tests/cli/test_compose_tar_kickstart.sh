@@ -16,6 +16,13 @@ CLI="${CLI:-./src/bin/composer-cli}"
 
 rlJournalStart
     rlPhaseStartSetup
+        if [ "$BACKEND" == "osbuild-composer" ] && [ -z "$($CLI sources list | grep beakerlib-client)" ]; then
+            rlAssertExists "/root/beakerlib-client-repo.toml"
+            rlRun -t -c "$CLI sources add /root/beakerlib-client-repo.toml"
+        fi
+    rlPhaseEnd
+
+    rlPhaseStartSetup
         TMP_DIR=$(mktemp -d /tmp/composer.XXXXX)
         SSH_KEY_DIR=$(mktemp -d /tmp/composer-ssh-keys.XXXXXX)
 

@@ -9,6 +9,18 @@ yum -y remove lorax $BACKEND composer-cli
 
 if ! rpm -q beakerlib; then
     if [ $(. /etc/os-release && echo $ID) = "rhel" ]; then
+        # prepare additional sources configuration for test scenarios
+        # which need beakerlib
+        if [ "$BACKEND" == "osbuild-composer" ]; then
+            cat > /root/beakerlib-client-repo.toml << __EOF__
+name = "beakerlib-client"
+url = "https://download.eng.bos.redhat.com/beakerrepos/client/RedHatEnterpriseLinux$$releasever/"
+type = "yum-baseurl"
+check_ssl = false
+check_gpg = false
+__EOF__
+        fi
+
         (cd /etc/yum.repos.d; curl -O -L http://download.devel.redhat.com/beakerrepos/beaker-client-RedHatEnterpriseLinux.repo)
         # disable sslverify b/c yum will fail to sync metadata otherwise
         sed -i "s/\(gpgcheck=0\)/\1\nsslverify=0/" /etc/yum.repos.d/beaker-client-RedHatEnterpriseLinux.repo
