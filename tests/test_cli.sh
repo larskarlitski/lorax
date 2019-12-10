@@ -11,6 +11,11 @@ CLI="${CLI:-}"
 
 function setup_tests {
     if [ "$BACKEND" == "osbuild-composer" ]; then
+        systemctl status --no-pager osbuild-worker@1
+        if [ "$?" != "0" ]; then
+            systemctl start osbuild-worker@1
+        fi
+
         # work around https://bugzilla.redhat.com/show_bug.cgi?id=1778126
         if [ ! -f "/usr/bin/audit2allow" ]; then
             yum -y install policycoreutils-python-utils
