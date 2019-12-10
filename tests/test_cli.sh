@@ -10,7 +10,17 @@ set -eu
 CLI="${CLI:-}"
 
 function setup_tests {
-    [ "$BACKEND" == "osbuild-composer" ] && return 0
+    if [ "$BACKEND" == "osbuild-composer" ]; then
+        # work around https://bugzilla.redhat.com/show_bug.cgi?id=1778126
+        if [ ! -f "/usr/bin/audit2allow" ]; then
+            yum -y install policycoreutils-python-utils
+        fi
+        ausearch -c '(composer)' --raw | audit2allow -M my-composer
+        semodule -X 300 -i my-composer.pp
+        ausearch -c '(d-worker)' --raw | audit2allow -M my-worker
+        semodule -X 300 -i my-dworker.pp
+        return 0
+    fi
 
     local share_dir=$1
 
