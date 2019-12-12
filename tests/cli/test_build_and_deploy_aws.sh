@@ -89,7 +89,11 @@ __EOF__
     rlPhaseStartTest "Import AMI image in AWS"
         rlRun -t -c "$CLI compose image $UUID"
 
-        AMI="$UUID-disk.ami"
+        if [ "$BACKEND" == "osbuild-composer" ]; then
+          AMI="$UUID-image.raw.xz"
+        else
+          AMI="$UUID-disk.ami"
+        fi
 
         # upload to S3
         rlRun -t -c "aws s3 cp $AMI s3://$AWS_BUCKET"
