@@ -14,7 +14,7 @@ if ! rpm -q beakerlib; then
         if [ "$BACKEND" == "osbuild-composer" ]; then
             cat > /root/beakerlib-client-repo.toml << __EOF__
 name = "beakerlib-client"
-url = "https://download.eng.bos.redhat.com/beakerrepos/client/RedHatEnterpriseLinux$$releasever/"
+url = "http://download.eng.bos.redhat.com/beakerrepos/client/RedHatEnterpriseLinux$$releasever/"
 type = "yum-baseurl"
 check_ssl = false
 check_gpg = false
