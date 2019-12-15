@@ -15,15 +15,6 @@ function setup_tests {
         if [ "$?" != "0" ]; then
             systemctl start osbuild-worker@1
         fi
-
-        # work around https://bugzilla.redhat.com/show_bug.cgi?id=1778126
-        if [ ! -f "/usr/bin/audit2allow" ]; then
-            yum -y install policycoreutils-python-utils
-        fi
-        ausearch -c '(composer)' --raw | audit2allow -M my-composer
-        semodule -X 300 -i my-composer.pp
-        ausearch -c '(d-worker)' --raw | audit2allow -M my-worker
-        semodule -X 300 -i my-dworker.pp
         return 0
     fi
 
